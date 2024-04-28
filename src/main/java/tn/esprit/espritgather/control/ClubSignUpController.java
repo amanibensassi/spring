@@ -11,7 +11,7 @@ import tn.esprit.espritgather.service.AuthService;
 
 import java.io.IOException;
 
-@CrossOrigin(origins = "http://localhost:4200")
+@CrossOrigin("*")
 
 @RestController
 @RequestMapping("/signup/club")

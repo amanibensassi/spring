@@ -1,7 +1,6 @@
 package tn.esprit.espritgather.service;
 
 import jakarta.persistence.EntityManager;
-import jdk.swing.interop.SwingInterOpUtils;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

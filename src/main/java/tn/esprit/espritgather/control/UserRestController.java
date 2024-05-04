@@ -21,7 +21,7 @@ import java.util.Optional;
 @RestController
 @AllArgsConstructor
 @RequestMapping("/user")
-@CrossOrigin(origins = "http://localhost:4200")
+@CrossOrigin(origins = "*")
 public class UserRestController {
     IUserService userService;
     @Autowired

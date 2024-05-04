@@ -18,7 +18,7 @@ import java.util.Map;
 @Tag(name = "Gestion Task")
 @RestController
 @AllArgsConstructor
-@CrossOrigin(origins = "http://localhost:4200")
+@CrossOrigin(origins = "*")
 @RequestMapping("/task")
 public class TaskRestController {
     ITaskService taskService;

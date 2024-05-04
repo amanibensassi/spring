@@ -1,32 +1,29 @@
 package tn.esprit.espritgather.entity;
 
-import lombok.*;
 import jakarta.persistence.*;
-import java.util.Date;
-import java.util.Set;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
 
 @Entity
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-
-public class Publication {
+public class CommentairePub {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long idPublication;
+    private Long idCommentaire;
     private String body;
-    private Date datePublication;
 
-    private int nl;
-    private int dl;
     @ManyToOne
-    @JoinColumn(name = "event")
-    private Event event;
-
-
+    @JoinColumn(name = "publication")
+    private Publication publication;
 
     @ManyToOne
     @JoinColumn(name = "user")
     private User user;
+
 }

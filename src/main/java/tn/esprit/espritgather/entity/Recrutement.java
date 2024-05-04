@@ -25,18 +25,20 @@ public class Recrutement {
     private Date dateFinish;
 
     private int niveau;
-    @Enumerated(EnumType.STRING)
+
+    private boolean archive;
+
+
     @ElementCollection
 
-
-    @MapKeyJoinColumn(name = "skillName")
-    @Column(name = "level")
-    private Map<Skill, SkillLevel> requiredSkills;
-
+    private Set<Skill> requiredSkills;
 
     @ManyToOne
     @JoinColumn(name = "user")
     private User user;
+
+
+
 
 
 

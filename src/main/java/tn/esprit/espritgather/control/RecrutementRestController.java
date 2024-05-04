@@ -41,6 +41,16 @@ public class RecrutementRestController {
 
         return recrutement;
     }
+
+    @PostMapping("/add-rec-by-user/{user-id}")
+    public Recrutement addRecByUser(@PathVariable("user-id") Long userId, @RequestBody Recrutement r) {
+
+        User user = userService.retrieveUser(userId);
+        r.setUser(user);
+        Recrutement savedEvent = recrutementService.addRecrutement(r);
+        return  savedEvent;
+
+    }
     // http://localhost:8089/espritgather/recrutement/remove-recrutement/{recrutement-id}
     @DeleteMapping("/remove-recrutement/{recrutement-id}")
     public void removerecrutement(@PathVariable("recrutement-id") Long rId) {
@@ -57,19 +67,13 @@ public class RecrutementRestController {
 
 
 
-    @PostMapping("/add-rec-by-user/{user-id}")
-    public Recrutement addRecByUser(@PathVariable("user-id") Long userId, @ModelAttribute Recrutement r) {
 
-        User user = userService.retrieveUser(userId);
-        r.setUser(user);
-        Recrutement savedEvent = recrutementService.addRecrutement(r);
-        return  savedEvent;
-
-    }
 
 
     @GetMapping("/retrieve-recs-by-user/{user-id}")
     public List<Recrutement> retrieverecsByUser(@PathVariable("user-id") Long userId) {
+        recrutementService.updateRecArchive();
+
         List<Recrutement> recs = recrutementService.retrieverecsByUser(userId);
         return recs;
     }

@@ -1,8 +1,11 @@
 package tn.esprit.espritgather.service;
+import com.cloudinary.Cloudinary;
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
+import tn.esprit.espritgather.config.CloudinaryService;
 import tn.esprit.espritgather.entity.Event;
 import tn.esprit.espritgather.entity.Ticket;
 import tn.esprit.espritgather.repo.EventRepository;
@@ -16,12 +19,13 @@ import java.nio.file.Paths;
 import java.util.*;
 
 import static tn.esprit.espritgather.control.EventRestController.uploadDirectory;
-
+@Slf4j
 @Service
 @AllArgsConstructor
 public class EventServiceImpl implements IEventService {
     EventRepository eventRepository;
     TicketRepository ticketRepository;
+    CloudinaryService CloudinaryService;
     public List<Event> retrieveAllEvents() { return eventRepository.findAll(); }
     public Event retrieveEvent(Long eventId) {
         return eventRepository.findById(eventId).get();
@@ -36,14 +40,14 @@ public class EventServiceImpl implements IEventService {
         return eventRepository.save(event);
     }
 
-    public Event saveEvent(Event event, MultipartFile imageFile) throws IOException {
-        if (!imageFile.isEmpty()) {
-            String fileName = saveImage(imageFile);
-            event.setImagePath(fileName);
-        }
+    public Event saveEvent(Event event, String imageFile) throws IOException {
+            event.setImagePath(imageFile);
+            eventRepository.save(event);
+
+
         return eventRepository.save(event);
     }
-    @Scheduled(fixedRate = 600)
+    @Scheduled(fixedRate = 60000)
     public void updateEventArchive() {
         List<Event> events = eventRepository.findAll();
         for (Event event : events) {
@@ -72,21 +76,14 @@ public class EventServiceImpl implements IEventService {
     }
 
 
-    @Scheduled(fixedRate = 60000)
+    //@Scheduled(fixedRate = 60000)
     public List<Event> retrieveEventsByUser(Long userId) {
         updateEventArchive();
         return eventRepository.findEventsByUserIdUser(userId);
     }
 
 
-    private String saveImage(MultipartFile imageFile) throws IOException {
-        String fileName = UUID.randomUUID().toString() + "-" + imageFile.getOriginalFilename();
-        String filePath = uploadDirectory + File.separator + fileName;
-        byte[] bytes = imageFile.getBytes();
-        Path path = Paths.get(filePath);
-        Files.write(path, bytes);
-        return fileName;
-    }
+
 
     public List<Event> retrieveEventByNameEvent(String name){
         return eventRepository.findEventsByNameEvent(name);

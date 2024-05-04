@@ -20,6 +20,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import tn.esprit.espritgather.config.CloudinaryService;
 import tn.esprit.espritgather.entity.Event;
 import tn.esprit.espritgather.entity.Ticket;
 import tn.esprit.espritgather.entity.User;
@@ -56,9 +57,10 @@ public class EventRestController {
     ITicketService ticketService;
     TicketRepository ticketRepository;
     IUserService userService;
+    CloudinaryService cloudinaryService;
 
-    public static String uploadDirectory = "C:/Users/Admin/angular/src/assets/images/";
-    //public static String uploadDirectory = "C:/Users/ameni/OneDrive/Bureau/angular/src/assets/images/";
+    // public static String uploadDirectory = "C:/Users/Admin/angular/src/assets/images/";
+    public static String uploadDirectory = "C:/Users/ameni/OneDrive/Bureau/angular/src/assets/images/";
 
 
     // http://localhost:8089/espritgather/event/retrieve-all-events
@@ -80,7 +82,9 @@ public class EventRestController {
     @PostMapping("/add-event")
     public ResponseEntity<Event> addEvent(@ModelAttribute Event event, @RequestParam("imageFile") MultipartFile imageFile) {
         try {
-            Event savedEvent = eventService.saveEvent(event, imageFile);
+            String imagePath = cloudinaryService.uploadImage(imageFile);
+
+            Event savedEvent = eventService.saveEvent(event,imagePath);
             return ResponseEntity.status(HttpStatus.CREATED).body(savedEvent);
         } catch (IOException e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
@@ -98,12 +102,16 @@ public class EventRestController {
         return eventService.findEventsOrderByTotalNbts(userId);
     }
 
-
     @PostMapping("/add-event/{user-id}")
     public Event addEventByUser(@PathVariable("user-id") Long userId, @ModelAttribute Event event, @RequestParam("imageFile") MultipartFile imageFile) throws IOException {
         User user = userService.retrieveUser(userId);
         event.setUser(user);
-        Event savedEvent = eventService.saveEvent(event, imageFile);
+        System.out.println("Date Start received: " + event.getDateStart());
+        System.out.println("Date Finish received: " + event.getDateFinish());
+        String imagePath = cloudinaryService.uploadImage(imageFile);
+        Event savedEvent = eventService.saveEvent(event, imagePath);
+        System.out.println("Date Start received: " + event.getDateStart());
+        System.out.println("Date Finish received: " + event.getDateFinish());
         return savedEvent;
     }
 

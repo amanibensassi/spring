@@ -1,15 +1,19 @@
 package tn.esprit.espritgather.service;
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import tn.esprit.espritgather.entity.Event;
 import tn.esprit.espritgather.entity.Task;
 import tn.esprit.espritgather.entity.User;
+import tn.esprit.espritgather.enumeration.EventSkill;
+import tn.esprit.espritgather.enumeration.StatusT;
 import tn.esprit.espritgather.repo.EventRepository;
 import tn.esprit.espritgather.repo.TaskRepository;
 import tn.esprit.espritgather.repo.UserRepository;
 
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
+@Slf4j
 
 @Service
 @AllArgsConstructor
@@ -39,6 +43,25 @@ public class TaskServiceImpl implements ITaskService {
         return taskRepository.save(task);
     }
 
+    @Scheduled(fixedRate = 60000)
+    public void updateStatusTask() {
+        List<Task> tasks = taskRepository.findAll();
+        for (Task task : tasks) {
+            if (task.getTaskFinish() == null || new Date().after(task.getTaskFinish())) {
+                task.setStatus(StatusT.COMPLETED);
+                taskRepository.save(task);
+            }
+            if (new Date().before(task.getTaskFinish()) && new Date().after((task.getTaskStart()))) {
+                task.setStatus(StatusT.IN_PROGRESS);
+                taskRepository.save(task);
+            }
+            if (new Date().before(task.getTaskStart())) {
+                task.setStatus(StatusT.TODO);
+                taskRepository.save(task);
+            }
+        }
+    }
+
 
     @Override
     public Task createTask(Task task, Long eventId) {
@@ -62,6 +85,16 @@ public class TaskServiceImpl implements ITaskService {
     public User retrieveUser(Long userId) {
         return userRepository.findByIdUser(userId);
 
+    }
+
+    public Map<EventSkill, Integer> countSkillOccurrences(List<Task> tasks) {
+        Map<EventSkill, Integer> skillCounts = new HashMap<>();
+        for (Task task : tasks) {
+            for (EventSkill skill : task.getSkills()) {
+                skillCounts.put(skill, skillCounts.getOrDefault(skill, 0) + 1);
+            }
+        }
+        return skillCounts;
     }
 
 

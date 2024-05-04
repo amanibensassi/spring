@@ -18,6 +18,7 @@ public class ProcessRecrutement {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long idProcessRecrutement;
+    private String imagePath;
 
     private Date interviewDate;
     private String whyToJoin;
@@ -28,13 +29,13 @@ public class ProcessRecrutement {
     @Getter
     @Setter
     private boolean approved;
+
+
+
+
     @ElementCollection
-    @MapKeyJoinColumn(name = "skillName")
-    @Column(name = "level")
 
-    private Map<Skill, SkillLevel> skills;
-
-
+    private Set<Skill> skills;
     @ManyToOne
     @JoinColumn(name = "recrutement")
     private Recrutement recrutement;
@@ -43,24 +44,16 @@ public class ProcessRecrutement {
     @JoinColumn(name = "user")
     private User user;
 
-
-
-
-    public Map<Skill, SkillLevel> getSkills() {
-        if (skills != null) {
-            return Collections.unmodifiableMap(skills);
-        } else {
-            return Collections.emptyMap();
-        }
+    public void addSkill(Skill skill) {
+        skills.add(skill);
     }
 
-    public void approveProcess() {
-        if (this.getRecrutement() != null && this.getRecrutement().getNiveau() > 0) {
-            this.getRecrutement().setNiveau(this.getRecrutement().getNiveau() - 1);
-            // ... logic to potentially delete recruitment (consider transactions)
-        }
-    }
     public boolean getApproved() {
+        return approved;
+    }
+
+
+    public boolean isApproved() {
         return approved;
     }
 

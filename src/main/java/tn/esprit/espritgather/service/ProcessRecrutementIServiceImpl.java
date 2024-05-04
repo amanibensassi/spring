@@ -1,4 +1,5 @@
 package tn.esprit.espritgather.service;
+import tn.esprit.espritgather.entity.Event;
 import tn.esprit.espritgather.entity.Recrutement;
 
 import lombok.AllArgsConstructor;
@@ -11,9 +12,11 @@ import tn.esprit.espritgather.repo.ProcessNotFoundException;
 import tn.esprit.espritgather.repo.ProcessRecrutementRepository;
 import tn.esprit.espritgather.repo.RecrutementRepository;
 
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 @Service
 @AllArgsConstructor
@@ -50,68 +53,11 @@ public class ProcessRecrutementIServiceImpl implements IProcessRecrutementServic
     public List<ProcessRecrutement> retrieveProcessesByRecrutement(Long idRecrutement) {
         return processRecrutementRepository.findProcessRecrutementByRecrutement_IdRecrutement(idRecrutement);
     }
-    @Override
-    public boolean compareSkillsAndApprove(Recrutement recrutement, ProcessRecrutement process) {
-        Map<Skill, SkillLevel> recruitmentSkills = recrutement.getRequiredSkills();
-        Map<Skill, SkillLevel> processSkills = process.getSkills();
-
-        if (recruitmentSkills == null || processSkills == null) {
-            process.setApproved(false);
-            processRecrutementRepository.save(process);
-            return false;
-        }
-
-        int totalSkills = recruitmentSkills.size();
-        int matchedSkills = 0;
-
-        for (Map.Entry<Skill, SkillLevel> entry : recruitmentSkills.entrySet()) {
-            Skill skillName = entry.getKey();
-            SkillLevel requiredLevel = entry.getValue();
-
-            if (processSkills.containsKey(skillName)) {
-                SkillLevel actualLevel = processSkills.get(skillName);
-                if (matchSkillLevel(requiredLevel, actualLevel)) {
-                    matchedSkills++;
-                }
-            }
-        }
-
-        // Calculate matching percentage
-        double matchPercentage = (double) matchedSkills / totalSkills * 100;
-
-        // Determine approval status based on matching percentage
-        if (matchPercentage >= 50){
-            process.setApproved(true);
-            processRecrutementRepository.save(process);
-             return true;
-        }
-
-        return false;
-    }
-
-    public void approveProcess(Long processId) throws ProcessNotFoundException {
-        ProcessRecrutement p = processRecrutementRepository.getReferenceById(processId);
-        Recrutement process = recrutementRepository.findById(processId)
-                .orElseThrow(() -> new ProcessNotFoundException("Process not found with ID: " + processId));
-
-        if (process.getNiveau() >= 0 && compareSkillsAndApprove(process,p))  {  // Use "vacancies" instead of "niveau"
-            process.setNiveau(process.getNiveau() - 1);
-
-            if (process.getNiveau() == 0) {
-                recrutementRepository.delete(process); // Delete if vacancies reach zero
-                // Optional: Log deletion or notify relevant parties
-            } else {
-                recrutementRepository.save(process);
-            }
-
-        }recrutementRepository.save(process);
-    }
 
 
-    private boolean matchSkillLevel(SkillLevel requiredLevel, SkillLevel actualLevel) {
 
-        return requiredLevel == actualLevel;
-    }
+
+
     public Long countApprovedProcesses() {
         return processRecrutementRepository.countByApproved(true);
     }
@@ -121,11 +67,33 @@ public class ProcessRecrutementIServiceImpl implements IProcessRecrutementServic
     }
 
     @Override
-    public void insertSkillsForProcess(Long processId, Map<Skill, SkillLevel> skillsToAdd) {
+    public boolean compareSkillsAndApprove(Recrutement recrutement, ProcessRecrutement process) {
+        Set<Skill> recruitmentSkills = recrutement.getRequiredSkills();
+        Set<Skill> processSkills = process.getSkills();
+
+
+        int commonSkillsCount = 0;
+        for (Skill skill : recruitmentSkills) {
+            if (processSkills.contains(skill)) {
+                commonSkillsCount++;
+            }
+        }
+
+
+        double compatibilityPercentage = ((double) commonSkillsCount / recruitmentSkills.size()) * 100;
+
+        if (compatibilityPercentage >= 50) {
+            return true;
+        } else {
+            return false;
+        }
+
 
     }
 
 
+
+    @Override
     public Map<Skill, Double> calculateSkillSelectionPercentageIncludingUnapproved() {
         List<ProcessRecrutement> allProcesses = processRecrutementRepository.findAll();
         Map<Skill, Integer> skillCounts = new HashMap<>();
@@ -137,11 +105,9 @@ public class ProcessRecrutementIServiceImpl implements IProcessRecrutementServic
 
 
         for (ProcessRecrutement process : allProcesses) {
-            Map<Skill, SkillLevel> processSkills = process.getSkills();
-            if (processSkills != null) {
-                for (Skill skill : processSkills.keySet()) {
-                    skillCounts.put(skill, skillCounts.get(skill) + 1);
-                }
+            Set<Skill> processSkills = process.getSkills();
+            for (Skill skill : processSkills) {
+                skillCounts.put(skill, skillCounts.get(skill) + 1);
             }
         }
 
@@ -154,6 +120,41 @@ public class ProcessRecrutementIServiceImpl implements IProcessRecrutementServic
         }
 
         return skillPercentages;
+    }
+    public void approveProcess(Long processId) {
+        ProcessRecrutement process = processRecrutementRepository.findById(processId)
+                .orElseThrow(() -> new ProcessNotFoundException("Processus de recrutement non trouvé avec l'ID : " + processId));
+
+        Recrutement recrutement = process.getRecrutement();
+
+        if (process.isApproved()==true && recrutement.getNiveau() > 0) {
+
+
+
+            int niveau = recrutement.getNiveau();
+            if (niveau > 0) {
+                recrutement.setNiveau(niveau - 1);
+
+            }
+
+
+            processRecrutementRepository.save(process);
+            recrutementRepository.save(recrutement);
+        }
+    }
+
+
+
+
+
+
+
+    public ProcessRecrutement saveProcess(ProcessRecrutement pr, String imageFile) throws IOException {
+        pr.setImagePath(imageFile);
+        processRecrutementRepository.save(pr);
+
+
+        return processRecrutementRepository.save(pr);
     }
 
 

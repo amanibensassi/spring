@@ -7,7 +7,7 @@ import java.io.IOException;
 
 public interface AuthService {
    // boolean createUser(SignupRequest signupRequest) ;
-     boolean createUser(SignupRequest signupRequest,MultipartFile imageFile) throws IOException;
+     boolean createUser(SignupRequest signupRequest,String imageFile) throws IOException;
 
 
 }

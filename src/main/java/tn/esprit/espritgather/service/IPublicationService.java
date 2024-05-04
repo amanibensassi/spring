@@ -10,4 +10,10 @@ public interface IPublicationService {
     Publication addPublication(Publication publication);
     void removePublication(Long publicationId);
     Publication modifyPublication(Publication publication);
+
+    List<Object[]> findAllWithNlAndDl();
+
+    Object[] findLikesAndDislikesByPublicationId(Long publicationId);
+
+
 }

@@ -7,6 +7,7 @@ import org.springframework.transaction.annotation.Transactional;
 import tn.esprit.espritgather.entity.Event;
 import tn.esprit.espritgather.entity.Management;
 import tn.esprit.espritgather.entity.Ticket;
+import tn.esprit.espritgather.repo.EventRepository;
 import tn.esprit.espritgather.repo.ManagementRepository;
 
 import java.util.*;
@@ -16,6 +17,8 @@ import java.util.*;
 public class IManagementServiceImpl implements IManagementService {
     EntityManager entityManager;
     ManagementRepository managementRepository;
+    EventRepository eventRepository;
+    ISmsService smsService;
     @Override
     public List<Management> retrieveAllManagement() {
         return managementRepository.findAll();
@@ -143,13 +146,16 @@ public class IManagementServiceImpl implements IManagementService {
         System.out.println(listevent.isEmpty());
 
         if ((listevent.isEmpty()&& list.isEmpty())||(listevent.isEmpty())){
-           System.out.println("kaed yodkhol bel ghalet ll ham");
+
            String sql ="UPDATE `management` SET `bloc`='"+m.getBloc()+"',`classe`='"+m.getClasse()+"' WHERE `id_management`='"+management.getIdManagement()+"'  ";
            entityManager.createNativeQuery(sql).executeUpdate();
+smsService.sendSms("+216"+management.getEvent().getUser().getTelNumber(), "+13343098198","Your request for a classroom was successfully approved. Your class is at bloc: "+m.getBloc() + " at the class number :"+m.getClasse());
+
+
            return management;
        }else{
 
-            System.out.println("yekhdem b shih");
+
           //  String sql ="UPDATE `management` SET `bloc`='"+management.getBloc()+"',`classe`='"+management.getClasse()+"' WHERE `id_management`='"+management.getIdManagement()+"'  ";
         //    entityManager.createNativeQuery(sql).executeUpdate();
             Management m1= new Management();

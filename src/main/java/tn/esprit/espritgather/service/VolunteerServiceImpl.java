@@ -10,6 +10,7 @@ import tn.esprit.espritgather.repo.UserRepository;
 import tn.esprit.espritgather.repo.VolunteerRepository;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 @AllArgsConstructor
@@ -63,6 +64,22 @@ public class VolunteerServiceImpl implements IVolunteerService {
     public List<Volunteer> retrieveVolunteersByTask(Task task) {
         return volunteerRepository.findVolunteerByTask(task);
     }
+
+    @Override
+    public List<Volunteer> findVolunteerByUser_IdUserAndTask_IdTask(Long user,Long task) {
+        return volunteerRepository.findVolunteerByUser_IdUserAndTask_IdTask(user,task);
+    }
+
+    public Map<String, Long> findUserVolunteerCounts() {
+        List<Object[]> results = volunteerRepository.findUserVolunteerCounts();
+        return results.stream()
+                .collect(Collectors.toMap(
+                        obj -> String.valueOf(obj[0]),
+                        obj -> Long.valueOf(String.valueOf(obj[1]))
+                ));
+    }
+
+
 
 
 

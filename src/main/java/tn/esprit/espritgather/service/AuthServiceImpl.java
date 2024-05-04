@@ -16,6 +16,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Optional;
 import java.util.UUID;
 
 
@@ -42,13 +43,18 @@ public class AuthServiceImpl implements AuthService {
         return true;
     }
 */
-    public boolean createUser(SignupRequest signupRequest,MultipartFile imageFile) throws IOException {
+    public boolean createUser(SignupRequest signupRequest,String imageFile) throws IOException {
+        Optional<User> existingUser = userRepository.findBymail(signupRequest.getMail());
+        if (existingUser.isPresent()) {
+            return false;
+        }
 
         User user = new User();
-        if (!imageFile.isEmpty()) {
-            String fileName = saveImage(imageFile);
-            user.setImagePath(fileName);
-        }
+        user.setImagePath(imageFile);
+
+        //if (!imageFile.isEmpty()) {
+            //String fileName = saveImage(imageFile);
+        //}
         BeanUtils.copyProperties(signupRequest,user);
         String hashPassword = passwordEncoder.encode(signupRequest.getPassword());
         user.setPassword(hashPassword);

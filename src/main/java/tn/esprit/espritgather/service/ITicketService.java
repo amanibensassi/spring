@@ -1,5 +1,6 @@
 package tn.esprit.espritgather.service;
 
+import org.springframework.data.repository.query.Param;
 import tn.esprit.espritgather.entity.Ticket;
 
 import java.util.Date;
@@ -25,6 +26,8 @@ public interface ITicketService {
     Map<String, Long> findTotalTicketsByTypeAchat();
 
     Map<String, Double> findTotalPricesByEvent();
+
+    Map<String, Double> findTotalPricesByEventUser(Long userId);
 
 
 

@@ -8,10 +8,12 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.AllArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 import tn.esprit.espritgather.entity.Task;
+import tn.esprit.espritgather.enumeration.EventSkill;
 import tn.esprit.espritgather.repo.EventRepository;
 import tn.esprit.espritgather.service.ITaskService;
 
 import java.util.List;
+import java.util.Map;
 
 @Tag(name = "Gestion Task")
 @RestController
@@ -88,6 +90,13 @@ public class TaskRestController {
     @GetMapping("/retrieve-user/{taskId}")
     public ResponseEntity<?> retrieveTask(@PathVariable("taskId") Long taskId) {
         return new ResponseEntity<>(taskService.retrieveTask(taskId), HttpStatus.OK);
+    }
+
+    @GetMapping("/skills/count")
+    public Map<EventSkill, Integer> getSkillOccurrenceCounts() {
+        List<Task> tasks = taskService.retrieveAllTasks();
+        Map<EventSkill, Integer> skillCounts = taskService.countSkillOccurrences(tasks);
+        return skillCounts;
     }
 
 }

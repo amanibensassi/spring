@@ -5,6 +5,8 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+import tn.esprit.espritgather.config.CloudinaryService;
 import tn.esprit.espritgather.entity.*;
 import tn.esprit.espritgather.enumeration.Skill;
 import tn.esprit.espritgather.enumeration.SkillLevel;
@@ -13,6 +15,7 @@ import tn.esprit.espritgather.service.IProcessRecrutementService;
 import org.springframework.web.bind.annotation.*;
 
 
+import java.io.IOException;
 import java.util.*;
 
 
@@ -32,6 +35,8 @@ public class RecrutementProcessRestController {
     IProcessRecrutementService processService;
     IRecrutementService recrutementService;
     IUserService userService;
+    CloudinaryService cloudinaryService;
+
 
     // http://localhost:8089/espritgather/process/retrieve-all-processes
     @Operation(description = "récupérer toutes les process de la base de données")
@@ -99,17 +104,45 @@ public class RecrutementProcessRestController {
     }
 
 
-    @PostMapping("/add-process-by-rec-user/{user-id}/{rec-id}")
-    public ProcessRecrutement addTicketByEventAndUser(@PathVariable("user-id") Long userId, @RequestBody ProcessRecrutement pr, @PathVariable("rec-id") Long recId) {
+
+   /* @PostMapping("/add-process-by-rec-user/{user-id}/{rec-id}")
+    public ProcessRecrutement addTicketByEventAndUser(@PathVariable("user-id") Long userId, @ModelAttribute ProcessRecrutement pr, @PathVariable("rec-id") Long recId,@RequestParam("imageFile") MultipartFile imageFile) throws IOException {
         Recrutement r = recrutementService.retrieveRecrutement(recId);
+        String imagePath = cloudinaryService.uploadFile(imageFile);
+
         User user = userService.retrieveUser(userId);
 
         pr.setUser(user);
 
         pr.setRecrutement(r);
-        ProcessRecrutement a = processService.addProcess(pr);
-        return a;
-    }
+        processService.compareSkillsAndApprove(r, pr);
+        ProcessRecrutement addedProcess = processService.addProcess(pr);
+        processService.approveProcess(recId);
+
+        processService.saveProcess(pr,imagePath);
+
+        return addedProcess;
+    }*/
+   @PostMapping("/add-process-by-rec-user/{user-id}/{rec-id}")
+   public ProcessRecrutement addTicketByEventAndUser(@PathVariable("user-id") Long userId,
+                                                     @ModelAttribute ProcessRecrutement pr,
+                                                     @PathVariable("rec-id") Long recId,
+                                                     @RequestParam("imageFile") MultipartFile imageFile) throws IOException {
+       Recrutement r = recrutementService.retrieveRecrutement(recId);
+       String imagePath = cloudinaryService.uploadFile(imageFile);
+       User user = userService.retrieveUser(userId);
+       pr.setUser(user);
+       pr.setRecrutement(r);
+
+       boolean isApproved = processService.compareSkillsAndApprove(r, pr);
+       pr.setApproved(isApproved);
+
+       ProcessRecrutement addedProcess = processService.saveProcess(pr, imagePath);
+       processService.approveProcess(pr.getIdProcessRecrutement());
+       pr.setRecrutement(r);
+       return addedProcess;
+
+   }
 
     @GetMapping("/retrieve-process-by-rec-and-user/{user-id}/{rec-id}")
     public List<ProcessRecrutement> retrieveTicketsByEventAndUser(@PathVariable("user-id") Long recId,@PathVariable("rec-id") Long userId) {

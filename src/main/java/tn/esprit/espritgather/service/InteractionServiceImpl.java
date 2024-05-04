@@ -29,6 +29,12 @@ public class InteractionServiceImpl implements IInteractionService {
         return interactionRepository.findById(interactionId).orElse(null);
     }
 
+
+
+
+
+
+
     /*@Override
     public ResponseEntity<Map<String, Object>> addInteraction(Interaction interaction, Long idpub, Long idusr) {
         User u = new User();

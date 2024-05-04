@@ -23,8 +23,13 @@ public interface VolunteerRepository  extends JpaRepository<Volunteer,Long> {
 
     List<Volunteer> findVolunteerByUser(User user);
 
+    List<Volunteer> findVolunteerByUser_IdUserAndTask_IdTask(Long user,Long task);
+
     @Query("SELECT COUNT(v) FROM Volunteer v WHERE v.task.idTask = :taskId")
     int findNumberVolunteersByidTask(@Param("taskId") Long taskId);
+
+    @Query("SELECT v.user.firstName, COUNT(v) FROM Volunteer v GROUP BY v.user ORDER BY COUNT(v) DESC")
+    List<Object[]> findUserVolunteerCounts();
 
 
 }

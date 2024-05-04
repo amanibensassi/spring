@@ -20,6 +20,7 @@ public class Interaction {
     private Boolean dislike;
 
 
+
     @ManyToOne
     @JoinColumn(name = "publications")
     private Publication publication;

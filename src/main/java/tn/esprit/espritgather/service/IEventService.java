@@ -29,7 +29,7 @@ public interface IEventService {
     public List<Event> findAllEventsOrderedByPriceAsc();
     public List<Event> findAllEventsOrderedByNbt();
 
-    public Event saveEvent(Event event, MultipartFile imageFile) throws IOException;
+    public Event saveEvent(Event event, String imageFile) throws IOException;
 
 
 

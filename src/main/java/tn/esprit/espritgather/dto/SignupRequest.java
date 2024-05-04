@@ -4,6 +4,7 @@ import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import tn.esprit.espritgather.enumeration.ClubTypes;
+import tn.esprit.espritgather.enumeration.NiveauEtude;
 import tn.esprit.espritgather.enumeration.Role;
 
 import java.util.Date;
@@ -32,7 +33,7 @@ private String telNumber;
     private Date birthDay;
 
 
-
+    private NiveauEtude niveau;
     private String address;
     private String clubDetails ;
     private String clubName ;
@@ -129,5 +130,13 @@ private String telNumber;
 
     public void setPassword(String password) {
         this.password = password;
+    }
+
+    public NiveauEtude getNiveau() {
+        return niveau;
+    }
+
+    public void setNiveau(NiveauEtude niveau) {
+        this.niveau = niveau;
     }
 }

@@ -81,6 +81,17 @@ public class TicketServiceImpl implements ITicketService {
                 ));
     }
 
+    public Map<String, Double> findTotalPricesByEventUser(Long userId) {
+        List<Object[]> results = ticketRepository.findTotalPricesByEventWithUserId(userId);
+        Map<String, Double> totalPricesByEvent = new HashMap<>();
+        for (Object[] result : results) {
+            String eventId = String.valueOf(result[0]);
+            Double totalPrice = (Double) result[1];
+            totalPricesByEvent.put(eventId, totalPrice);
+        }
+        return totalPricesByEvent;
+    }
+
 
 
     public Map<String, Double> findTotalPricesByEvent() {

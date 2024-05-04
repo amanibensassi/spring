@@ -10,7 +10,7 @@ import java.util.List;
 public interface ManagementRepository extends JpaRepository<Management,Long> {
     Management findManagementByEventIdEvent(Long eventId);
 
-      @Query("SELECT m.bloc, m.classe, COUNT(m.idManagement) FROM Management m GROUP BY m.bloc, m.classe ")
+      @Query("SELECT m.bloc, m.classe, COUNT(m.idManagement) FROM Management m WHERE m.bloc!= null AND m.classe != null GROUP BY m.bloc, m.classe ")
       List<Object[]> calculateManagementCounts();
 
 

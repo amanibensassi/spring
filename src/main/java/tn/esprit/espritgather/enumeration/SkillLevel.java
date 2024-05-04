@@ -5,7 +5,4 @@ public enum SkillLevel {
     BASIC,
     INTERMEDIATE,
     ADVANCED
-
-
-
 }

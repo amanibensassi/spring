@@ -63,6 +63,9 @@ public class User {
 
     private Date dateCreation;
 
+    @Column(nullable = true)
+    private String passwordResetToken;
+
     @PrePersist
     protected void onCreate() {
         dateCreation = new Date();

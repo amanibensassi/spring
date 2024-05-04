@@ -6,7 +6,9 @@ import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import tn.esprit.espritgather.entity.Interaction;
+import tn.esprit.espritgather.entity.Publication;
 import tn.esprit.espritgather.service.InteractionServiceImpl;
+import tn.esprit.espritgather.service.PublicationServiceImpl;
 
 import java.util.List;
 import java.util.Map;
@@ -18,6 +20,7 @@ import java.util.Map;
 @CrossOrigin(origins = "http://localhost:4200")
 public class InteractionRestController {
     private final InteractionServiceImpl interactionService;
+    private final PublicationServiceImpl publicationService;
 
     @Operation(description = "Récupérer toutes les interactions de la base de données")
     @GetMapping("/interactions")
@@ -31,9 +34,26 @@ public class InteractionRestController {
     }
 
     @PostMapping("/add-interaction/{idP}/{idU}")
-    public ResponseEntity<Interaction> addInteraction(@RequestBody Interaction interaction, @PathVariable("idP") Long idpub,@PathVariable("idU") Long idusr) {
-        return interactionService.addInteraction(interaction,idpub,idusr);
+    public ResponseEntity<Interaction> addInteraction(@RequestBody Interaction interaction, @PathVariable("idP") Long idpub, @PathVariable("idU") Long idusr) {
+        ResponseEntity<Interaction> response = interactionService.addInteraction(interaction, idpub, idusr);
+
+        // Récupérer la publication associée à l'interaction
+        Publication p = publicationService.retrievePublication(idpub);
+        if (interaction.getLiked() != null && interaction.getLiked()) {
+            p.setNl(Math.max(0, p.getNl() + 1));
+            p.setDl(Math.max(0, p.getDl() - 1));
+        } else if (interaction.getDislike() != null && interaction.getDislike()) {
+            p.setDl(Math.max(0, p.getDl() + 1));
+            p.setNl(Math.max(0, p.getNl() - 1));
+        }
+        publicationService.modifyPublication(p);
+
+        return response;
     }
+
+
+
+
 
     @DeleteMapping("/remove-interaction/{interaction-id}")
     public void removeInteraction(@PathVariable("interaction-id") Long id) {

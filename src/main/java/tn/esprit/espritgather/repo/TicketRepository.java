@@ -43,4 +43,12 @@ public interface TicketRepository  extends JpaRepository<Ticket,Long> {
     List<Object[]> findTotalPricesByEvent();
 
 
+    @Query("SELECT t.event.nameEvent, SUM(e.price * t.nbts) FROM Ticket t JOIN t.event e WHERE e.user.idUser = :userId GROUP BY t.event.idEvent")
+    List<Object[]> findTotalPricesByEventWithUserId(@Param("userId") Long userId);
+
+
+
+
+
+
 }

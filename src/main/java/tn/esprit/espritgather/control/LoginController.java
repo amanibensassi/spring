@@ -13,7 +13,7 @@ import tn.esprit.espritgather.dto.LoginRequest;
 import tn.esprit.espritgather.dto.LoginRespone;
 import tn.esprit.espritgather.service.LoginServiceImpl;
 import tn.esprit.espritgather.utils.JWTUtil;
-@CrossOrigin(origins = "http://localhost:4200")
+@CrossOrigin(origins = "*")
 
 @RestController
 @RequestMapping("/login")

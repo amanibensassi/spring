@@ -12,7 +12,7 @@ import java.util.List;
 @Tag(name = "Gestion CommentairePub")
 @RestController
 @RequestMapping("/commentaire")
-@CrossOrigin(origins = "http://localhost:4200")
+@CrossOrigin(origins = "*")
 
 @AllArgsConstructor
 public class CommentairePubController {

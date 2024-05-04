@@ -17,7 +17,7 @@ import java.util.Map;
 @RestController
 @AllArgsConstructor
 @RequestMapping("/interaction")
-@CrossOrigin(origins = "http://localhost:4200")
+@CrossOrigin(origins = "*")
 public class InteractionRestController {
     private final InteractionServiceImpl interactionService;
     private final PublicationServiceImpl publicationService;

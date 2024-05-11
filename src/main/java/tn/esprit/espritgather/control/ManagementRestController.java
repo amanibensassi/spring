@@ -21,7 +21,7 @@ import java.util.Map;
 @RestController
 @AllArgsConstructor
 @RequestMapping("/management")
-@CrossOrigin(origins = "http://localhost:4200")
+@CrossOrigin(origins = "*")
 public class ManagementRestController {
     ISmsService smsService;
 IManagementService managementService;

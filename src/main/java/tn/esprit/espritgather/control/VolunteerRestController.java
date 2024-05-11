@@ -19,7 +19,7 @@ import java.util.Map;
 @RestController
 @AllArgsConstructor
 @RequestMapping("/volunteer")
-@CrossOrigin(origins = "http://localhost:4200")
+@CrossOrigin(origins = "*")
 public class VolunteerRestController {
     IVolunteerService volunteerService;
     ITaskService taskService;

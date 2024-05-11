@@ -99,4 +99,11 @@ public class TaskRestController {
         return skillCounts;
     }
 
+
+    @GetMapping("/total-tasks-by-status")
+    public ResponseEntity<Map<String, Long>> getTotalStatus() {
+        Map<String, Long> totalTicketsByTypeAchat = taskService.findTotalTasksByStatus();
+        return ResponseEntity.ok(totalTicketsByTypeAchat);
+    }
+
 }

@@ -18,7 +18,7 @@ public class IManagementServiceImpl implements IManagementService {
     EntityManager entityManager;
     ManagementRepository managementRepository;
     EventRepository eventRepository;
-    ISmsService smsService;
+
     @Override
     public List<Management> retrieveAllManagement() {
         return managementRepository.findAll();
@@ -149,7 +149,7 @@ public class IManagementServiceImpl implements IManagementService {
 
            String sql ="UPDATE `management` SET `bloc`='"+m.getBloc()+"',`classe`='"+m.getClasse()+"' WHERE `id_management`='"+management.getIdManagement()+"'  ";
            entityManager.createNativeQuery(sql).executeUpdate();
-smsService.sendSms("+216"+management.getEvent().getUser().getTelNumber(), "+13343098198","Your request for a classroom was successfully approved. Your class is at bloc: "+m.getBloc() + " at the class number :"+m.getClasse());
+
 
 
            return management;

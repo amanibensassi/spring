@@ -13,6 +13,8 @@ import tn.esprit.espritgather.repo.TaskRepository;
 import tn.esprit.espritgather.repo.UserRepository;
 
 import java.util.*;
+import java.util.stream.Collectors;
+
 @Slf4j
 
 @Service
@@ -60,6 +62,15 @@ public class TaskServiceImpl implements ITaskService {
                 taskRepository.save(task);
             }
         }
+    }
+
+    public Map<String, Long> findTotalTasksByStatus() {
+        List<Object[]> results = taskRepository.findTotalTasksByStatus();
+        return results.stream()
+                .collect(Collectors.toMap(
+                        obj -> String.valueOf(obj[0]),
+                        obj -> Long.valueOf(String.valueOf(obj[1]))
+                ));
     }
 
 

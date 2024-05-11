@@ -12,6 +12,7 @@ import tn.esprit.espritgather.entity.Ticket;
 import tn.esprit.espritgather.enumeration.Equip;
 import tn.esprit.espritgather.enumeration.Metric;
 import tn.esprit.espritgather.service.IManagementService;
+import tn.esprit.espritgather.service.ISmsService;
 
 import java.util.List;
 import java.util.Map;
@@ -22,7 +23,7 @@ import java.util.Map;
 @RequestMapping("/management")
 @CrossOrigin(origins = "http://localhost:4200")
 public class ManagementRestController {
-
+    ISmsService smsService;
 IManagementService managementService;
 
     // http://localhost:8089/espritgather/management/managements
@@ -75,7 +76,9 @@ IManagementService managementService;
     public Management AddClassroomsAcoordinally(@RequestBody Management c) {
         System.out.println(c.getIdManagement());
         System.out.println(c.getClasse());
-        return managementService.AddClassroomsAcoordinally(c);
+        Management m = managementService.AddClassroomsAcoordinally(c);
+        //smsService.sendSms("+21625125035", "+13343098198","Your request for a classroom was successfully approved. Your class is at bloc: "+c.getBloc() + " at the class number :"+c.getClasse());
+        return m;
     }
 
     // http://localhost:8089/espritgather/management/add-management

@@ -21,5 +21,7 @@ public interface ITaskService {
 
     User retrieveUser(Long userId);
 
+    Map<String, Long> findTotalTasksByStatus();
+
     public Map<EventSkill, Integer> countSkillOccurrences(List<Task> tasks);
 }
